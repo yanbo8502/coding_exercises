@@ -28,7 +28,7 @@ isMatch("aab", "c*a*b") → true
 #include "../../tools/catch.hpp"
 /***************/
 using namespace std;
-
+ 
 
 class Solution {
 public:
