@@ -25,4 +25,4 @@ clean:
 run:
 	./$(TARGET)
 
-all: compile run
+all: clean compile run
