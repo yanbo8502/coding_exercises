@@ -22,7 +22,7 @@ isMatch("aab", "c*a*b") → true
 #include <iostream>
 #include <vector>
 #include <map>
-#include <stack>
+
 /******unit test*****/
 #define CATCH_CONFIG_MAIN
 #include "../../tools/catch.hpp"
@@ -33,29 +33,33 @@ using namespace std;
 class Solution {
 public:
     bool isMatch(string s, string p) {
+          char * s1 = (char*)s.c_str();
+           char* p1 = (char*)p.c_str();
+          return isMatch1(s1,  p1);
+    }
 
-          int size_s = s.size();
-          int size_p = p.size();
-          if(p.size() ==0)
+    bool isMatch1(char* s, char* p) {
+          //cout<<s<<","<<p<<endl;
+          int size_s = strlen(s);
+          int size_p = strlen(p);
+
+          if(size_p == 0)
           {
-                if(s.size() == 0)
+                if(size_s == 0)
                 {
                       return true;
                 }
-                return false;
+            	 return false;
           }
-          if(p.size() == 1)
+          if(size_p == 1)
           {
-                   if(s.size() ==1 && (s[0] == p[0] || '.' == p[0]))
-                   {
-                         return true;
-                   }
+                 if(size_s ==1 && (s[0] == p[0] || '.' == p[0]))
+                 {
+                       return true;
+                 }
 
-                   return false;
+                 return false;
           }
-
-          stack<pair<int, int>>  s2p;
-
           if(p[size_p -1]!='*' && p[size_p -1]!='.')
           {
                   if(size_s > 0 && s[size_s-1] != p[size_p-1])
@@ -64,72 +68,45 @@ public:
                   }
           }
 
-          //when p.size()>=2
-          int j =0;
-          int i =0;
-          while( j < size_p)
-          {
-                if( j+1 < size_p && '*' == p[j+1])
-                {                        
-                        if( i == size_s)
-                        {
-                              j=j+2;
-                        }                       
-                        else if( '.' == p[j] || p[j] == s[i])
-                        {         
-                             s2p.push(make_pair(i+1,j + 2));
-                             s2p.push(make_pair(i,j + 2));
-                             i++;    
-                        }
-                        else
-                        {
-                             j=j+2;
-                        }
+           if(p[1] == '*')
+            {
+
+                if(size_s >0 && (s[0] == p[0] || '.' == p[0]))
+                {
+
+                       if(isMatch(s +1, p ))
+                       {
+                            return true;
+                       }
+                       
+                      if (isMatch(s +1 , p+2))
+                      {
+                            return true;
+                      }
+
+                       if(isMatch(s , p +2))
+                       {
+                            return true;
+                       }
+
+                      return false;
                 }
                 else
                 {
-                      if( i == size_s)
-                      {
-                          if(s2p.empty())
-                            {
-                                   break;
-                            }
-                            else
-                            {
-                                    auto sp=s2p.top();
-                                    s2p.pop();
-                                    i= sp.first;
-                                    j= sp.second;
-                            }
-                      } 
-                      else if(s[i] == p[j] || '.' == p[j])
-                     {
-                            i = i + 1;
-                            j = j + 1;
-                     }
-                     else
-                     {
-                            if(s2p.empty())
-                            {
-                                   break;
-                            }
-                            else
-                            {
-                                    auto sp=s2p.top();
-                                    s2p.pop();
-                                    i= sp.first;
-                                    j= sp.second;
-                            }
-                     }                     
+                      return  isMatch(s, p +2);
                 }
-          }
+            }
+            else
+            {
+                   if(size_s>0 && (s[0] == p[0] || '.' == p[0]))
+                   {
+                          return   isMatch(s +1, p+1);
+                   }
+                   return false;
+            }
+         
+          return false;
 
-          if(i<size_s || j < size_p)
-          {
-               return false;;
-          }
-
-           return true;
     }
 };
 
@@ -207,24 +184,6 @@ TEST_CASE("Testing Regx Matching") {
               SECTION("aaaaaaaaaaaaab matches a*a*a*a*a*a*a*a*a*a*b") {
                     s = "aaaaaaaaaaaaab";
                     p = "a*a*a*a*a*a*a*a*a*a*b";
-                    REQUIRE(sol.isMatch(s, p) );
-             }
-
-              SECTION(" aaba does not match ab*a*c*a") {
-                    s = "aaba";
-                    p = "ab*a*c*a";
-                    REQUIRE(!sol.isMatch(s, p) );
-             }
-
-                SECTION(" ab does not match .*..") {
-                    s = "ab";
-                    p = ".*..";
-                    REQUIRE(sol.isMatch(s, p) );
-             }
-
-              SECTION(" aaa does not match a*a") {
-                    s = "aaa";
-                    p = "a*a";
                     REQUIRE(sol.isMatch(s, p) );
              }
        
