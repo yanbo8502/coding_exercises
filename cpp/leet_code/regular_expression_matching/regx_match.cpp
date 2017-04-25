@@ -1,4 +1,5 @@
 /*
+https://leetcode.com/problems/regular-expression-matching/
 '.' Matches any single character.
 '*' Matches zero or more of the preceding element.
 
@@ -28,8 +29,8 @@ isMatch("aab", "c*a*b") → true
 #include "../../tools/catch.hpp"
 /***************/
 using namespace std;
- 
 
+/*v1 use stack instaed of recursive
 class Solution {
 public:
     bool isMatch(string s, string p) {
@@ -132,8 +133,113 @@ public:
            return true;
     }
 };
+*/
+/*vcompare
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int m = s.length();
+        int n = p.length();
 
+        // Iterative dynamic programming. Time: O(m^2 n), Space: O(m).
+        vector<int> dp = vector<int>();
+        for (int i = 0; i < m; i++) {
+            dp.push_back(0);
+        }
+        dp.push_back(1);
 
+        for (int j = n - 1; j >= 0; j--) {
+            if (j == 0 || p[j] != '*') {
+                for (int i = 0; i < m; i++) {
+                    dp[i] = (p[j] == '.' || p[j] == s[i]) && dp[i + 1];
+                }
+                dp[m] = 0;
+                continue;
+            }
+
+            --j;
+            for (int i = 0; i < m + 1; i++) {
+                for (int matchLen = 0; matchLen <= m - i; matchLen++) {
+                    if (matchLen != 0 && p[j] != '.' && p[j] != s[i + matchLen - 1]) {
+                        dp[i] = 0;
+                        break;
+                    }
+
+                    if (dp[i + matchLen]) {
+                        dp[i] = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return dp[0];
+    }
+};
+*/
+
+/*v2 */
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int slen = s.length();
+        int plen = p.length();
+        int dp[slen+1][plen+1];
+      
+        for(int i=0; i<=slen; i++)
+        {
+           for(int j=0;j<=plen; j++)
+          {
+             dp[i][j] = 0;
+          }
+           
+        }
+
+          dp[0][0] = 1;
+        for(int i=1; i<=slen; i++)
+        {
+            dp[i][0] = 0;
+        }
+
+        for(int j=0;j<plen; j++)
+        {
+              if(j-1>=0 && p[j-1]!='*' && p[j]=='*')
+              {
+                    dp[0][j+1] = dp[0][j] || dp[0][j-1];
+              }
+        }
+
+        for(int i=0; i<slen; i++)
+        {
+             for(int j=0;j<plen; j++)
+            {
+                   if(j-1>=0 && p[j-1]!='*' && p[j]=='*')
+                  {
+                          dp[i+1][j+1] = ((s[i]==p[j-1] || p[j-1] == '.')&& (dp[i][j] || dp[i][j+1]) ) || dp[i+1][j] || dp[i+1][j-1];
+                  }
+                  else if(p[j] == s[i] || p[j] == '.')
+                  {
+                        dp[i+1][j+1] =  dp[i][j];
+                  }
+            }
+             
+        }
+/*
+        cout<<"start:"<<endl;
+        for(int i=0; i<=slen; i++)
+        {
+           for(int j=0;j<=plen; j++)
+          {
+               cout<<dp[i][j]<<" ";
+          }
+           cout<<endl;
+        }
+        
+     */   
+        return dp[slen][plen];
+
+      }
+};
 
 TEST_CASE("Testing Regx Matching") {
 	    // set up
@@ -143,6 +249,12 @@ TEST_CASE("Testing Regx Matching") {
 
 	    // different sections
  
+             SECTION("a*e matches a**e") {
+                s = "a*e";
+                p = "a**e";
+                REQUIRE(sol.isMatch(s, p) );
+            }
+
             SECTION("abcde matches .*e") {
                 s = "abcde";
                 p = ".*e";
@@ -228,4 +340,9 @@ TEST_CASE("Testing Regx Matching") {
                     REQUIRE(sol.isMatch(s, p) );
              }
        
+              SECTION(" aaa does not match ab*a") {
+                    s = "aaa";
+                    p = "ab*a";
+                    REQUIRE(!sol.isMatch(s, p) );
+             }
    }
