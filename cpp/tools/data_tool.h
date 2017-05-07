@@ -34,6 +34,8 @@ public:
 	static Matrix* getGraphMatrixFromEdgeFiles(string filename);
 	template<typename T>
 	static TreeNode<T>*  getTree(string filename);
+	template<typename T>
+	static bool compareTwoSets(vector<T> v1, vector<T> v2);
 };
 /*
 从第1行开始表示矩阵每一行的数据，用逗号隔开。
@@ -309,4 +311,65 @@ void Tool::split3(const  string& source, const string& delim, vector<string>& el
 	     }
 }
 
+template<typename T>
+bool Tool::compareTwoSets(vector<T> v1, vector<T> v2)
+{
+	if(v1.size()!=v2.size())
+	{
+		return false;
+	}
+	map<T, int> v1m;
+	map<T, int> v2m;
+	typedef typename std::vector<T>::iterator iterator;
+	for (iterator i = v1.begin(); i != v1.end(); ++i)
+	{
+		string key = *i;
+		auto it =v1m.find(key);
+		if (it==v1m.end())
+		{
+			v1m[key] = 1;
+		}
+		else
+		{
+			v1m[key]++;
+		}
+	}
 
+	for (iterator i = v2.begin(); i != v2.end(); ++i)
+	{
+		string key= *i;
+		auto it =v2m.find(key);
+		if (it==v2m.end())
+		{
+			v2m[key] = 1;
+		}
+		else
+		{
+			v2m[key]++;
+		}
+	}
+	//compare v1m and v2m
+	for( auto iter=v1m.begin();     iter!=v1m.end();   iter++)
+	{
+		T key= iter->first;
+
+		 int value= iter->second;
+
+		 auto it =v2m.find(key);
+		if ( v2m.end()!=it)
+		{
+			if(v2m[key] != value)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+	 }
+
+	 return true;
+
+}
