@@ -13,6 +13,7 @@ public:
                     s[i] = 0;
                 }
                 int acc_sum = 0;
+                sum_map[0] = -1;
                 for(int i=0;i<n;i++)
                 {
                     acc_sum+=a[i];
@@ -54,8 +55,8 @@ TEST_CASE("Testing x^n") {
                     REQUIRE(sol.getMaxLength(a,11, 9 ) == 9);
          }
 
-         SECTION("sum 10 ->length7") {
-                    REQUIRE(sol.getMaxLength(a,11, 10 ) == 7);
+         SECTION("sum 10 ->length10") {
+                    REQUIRE(sol.getMaxLength(a,11, 10 ) == 10);
          }
 
          SECTION("sum 11 ->length  5") {
@@ -64,6 +65,16 @@ TEST_CASE("Testing x^n") {
 
           SECTION("sum 12 ->length  9") {
                     REQUIRE(sol.getMaxLength(a,11, 12 ) == 9);
+         }
+
+          SECTION("sum 6 ->length  4") {
+                      int a1[11] = {22,3,-2,4,-3,2,-2,5,9,-7,6};
+                    REQUIRE(sol.getMaxLength(a1,11,23 ) == 3);
+         }
+
+         SECTION("sum 6 ->length  1") {
+                     int a1[11] = {22,3,-2,4,-3,2,-2,5,9,-7,6};
+                    REQUIRE(sol.getMaxLength(a1,11, 22 ) == 1);
          }
 
 	
